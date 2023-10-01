@@ -1,0 +1,8 @@
+django
+psycopg2
+djangorestframework
+django-cors-headers
+djangorestframework-simplejwt
+django-filter
+google-cloud-storage
+gunicorn
