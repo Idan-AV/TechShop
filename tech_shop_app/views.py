@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -148,3 +149,39 @@ def get_all_items_for_a_company(request, company_name):
     result_page = paginator.paginate_queryset(all_cars_by_company, request)
     serializer = GetItemsByCompany(instance=result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def get_saved_item_by_id(request, item_id):
+    saved_item = get_object_or_404(SavedItem, item=item_id)
+    if request.method == 'GET':
+        serializer = GetSavedItem(instance=saved_item)
+        return Response(serializer.data)
+    elif request.method in ('PUT', 'PATCH'):
+        serializer = UpdateSavedItem(
+            instance=saved_item, data=request.data,
+            partial=request.method == 'PATCH'
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data)
+    else:
+        saved_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_ids_of_saved_items_for_user(request):
+    all_saved_ids = list(SavedItem.objects.filter(user=request.user).values_list('item').distinct())
+    all_saved_ids = [num for sublist in all_saved_ids for num in sublist]
+    print(all_saved_ids)
+    return JsonResponse(data=list(all_saved_ids), safe=False)
+
+
+@api_view(['GET'])
+def get_all_companies(request):
+    companies = Company.objects.all()
+    serializer = GetAllCompanies(instance=companies, many=True)
+    return Response(serializer.data)

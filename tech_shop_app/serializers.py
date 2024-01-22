@@ -118,18 +118,32 @@ class AddItem(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# class GetSavedItems(serializers.ModelSerializer):
+#     class Meta:
+#         model = SavedItem
+#         # fields = ['car']
+#         fields = []
+#         depth = 1
+#         # fields = ['car', 'user']
+#
+#     def to_representation(self, instance):
+#         item_instance = instance.item
+#         item_serializer = GetAllItems(item_instance)
+#         return item_serializer.data
 class GetSavedItems(serializers.ModelSerializer):
+    # cart_quantity = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = SavedItem
-        # fields = ['car']
-        fields = []
         depth = 1
-        # fields = ['car', 'user']
+        exclude = ['user']
 
     def to_representation(self, instance):
         item_instance = instance.item
         item_serializer = GetAllItems(item_instance)
-        return item_serializer.data
+        representation = super().to_representation(instance)
+        representation['item'] = item_serializer.data
+        return representation
 
 
 class AddSavedItem(serializers.ModelSerializer):
@@ -143,3 +157,51 @@ class GetItemsByCompany(serializers.ModelSerializer):
         model = Item
         fields = ['price', 'description', 'model', 'category', 'img_url', 'quantity'
             , 'storage', 'color', 'company_name']
+
+
+# class GetSavedItem(serializers.ModelSerializer):
+#     class Meta:
+#         model = SavedItem
+#         depth = 1
+#         exclude = ['user']
+#
+#     def to_representation(self, instance):
+#         item_instance = instance.item
+#         item_serializer = GetAllItems(item_instance)
+#         return item_serializer.data
+
+class GetSavedItem(serializers.ModelSerializer):
+    # cart_quantity = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = SavedItem
+        depth = 1
+        exclude = ['user']
+
+    def to_representation(self, instance):
+        item_instance = instance.item
+        item_serializer = GetAllItems(item_instance)
+        representation = super().to_representation(instance)
+        representation['item'] = item_serializer.data
+        return representation
+
+
+class UpdateSavedItem(serializers.ModelSerializer):
+    item = GetAllItems()
+
+    class Meta:
+        model = SavedItem
+        depth = 1
+        exclude = ['user']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        item_serializer = GetAllItems(instance.item)
+        representation['item'] = item_serializer.data
+        return representation
+
+
+class GetAllCompanies(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['company_name']

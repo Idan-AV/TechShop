@@ -49,6 +49,8 @@ class SavedItem(models.Model):
         related_name='saved_items'
     )
 
+    cart_quantity = models.IntegerField(null=False)
+
     class Meta:
         db_table = 'saved_items'
 

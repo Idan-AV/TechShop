@@ -17,6 +17,9 @@ urlpatterns = [
     path('all_items', get_all_items),
     path('saved_items', get_saved_items_for_user),
     path('items_according_a_company/<str:company_name>', get_all_items_for_a_company),
+    path('get_saved_item_by_id/<int:item_id>', get_saved_item_by_id),
+    path('get_all_saved_ids_for_user', get_ids_of_saved_items_for_user),
+    path('gel_all_companies', get_all_companies)
 
 ]
 
